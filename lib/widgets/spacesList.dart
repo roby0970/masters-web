@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:web_admin/controllers/pois.dart';
+import 'package:web_admin/controllers/spaceGrid.dart';
 import 'package:web_admin/controllers/spaces.dart';
 import 'package:web_admin/pages/spaceDetail.dart';
 
@@ -12,7 +14,8 @@ class SpacesList extends StatefulWidget {
 
 class _SpacesListState extends State<SpacesList> {
   final SpacesController controller = Get.find();
-
+  final PoisController poiController = Get.find();
+  final SpaceGridController spaceGridController = Get.find();
   @override
   void initState() {
     super.initState();
@@ -32,7 +35,9 @@ class _SpacesListState extends State<SpacesList> {
                     (e) => ListTile(
                       title: Text(e.title ?? 'Title'),
                       onTap: () {
-                        controller.currentSpace.value = e;
+                        controller.currentSpace(e);
+                        poiController.getPois();
+                        spaceGridController.getCoordinates(loadIndicator: true);
                         Get.to(SpaceDetail());
                       },
                       trailing: IconButton(

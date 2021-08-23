@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:web_admin/controllers/pois.dart';
+import '../controllers/pois.dart';
+import '../controllers/spaceGrid.dart';
 
 import '../controllers/spaces.dart';
 import '../widgets/spaceGrid.dart';
@@ -10,6 +11,7 @@ class SpaceDetail extends StatelessWidget {
   SpaceDetail({Key? key}) : super(key: key);
 
   final SpacesController spacesController = Get.find();
+  final SpaceGridController spaceGridController = Get.find();
   final PoisController poisController = Get.find();
   @override
   Widget build(BuildContext context) {
@@ -22,7 +24,12 @@ class SpaceDetail extends StatelessWidget {
               Text(spacesController.currentSpace.value.title!),
               Row(
                 mainAxisAlignment: MainAxisAlignment.start,
-                children: [SpaceGrid(), PoisList()],
+                children: [
+                  Obx(() => !spaceGridController.loading.value
+                      ? SpaceGrid()
+                      : CircularProgressIndicator()),
+                  PoisList()
+                ],
               )
             ],
           ),

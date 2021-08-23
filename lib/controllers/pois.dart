@@ -1,4 +1,6 @@
 import 'package:get/get.dart';
+import 'package:web_admin/controllers/spaces.dart';
+import '../models/spaces.dart';
 import '../models/poi.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
@@ -6,9 +8,26 @@ import 'dart:convert';
 class PoisController extends GetxController {
   RxList<Poi> pois = List<Poi>.empty().obs;
 
+  @override
+  void onInit() {
+    // called immediately after the widget is allocated memory
+    getPois();
+
+    super.onInit();
+  }
+
   late Rx<Poi> selected;
+
+  Poi getBasePoi(Space s) {
+    return pois.firstWhere((element) => element.title == s.title);
+  }
+
   Future<void> getPois() async {
-    final response = await http.get(Uri.parse("http://localhost:8000/pois"),
+    SpacesController spacesController = Get.find();
+
+    final response = await http.get(
+        Uri.parse(
+            "http://localhost:8000/pois_space/${spacesController.currentSpace.value.id}"),
         headers: {
           "Accept": "application/json",
           "Access-Control-Allow-Origin": "*"
@@ -23,7 +42,7 @@ class PoisController extends GetxController {
     pois.addAll(newPois);
 
     if (pois.isNotEmpty) {
-      selected = pois.first.obs;
+      selected = pois[0].obs;
     }
   }
 

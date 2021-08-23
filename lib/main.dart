@@ -21,8 +21,8 @@ class MyApp extends StatelessWidget {
   // This widget is the root of your application.
 
   final spacesController = Get.put(SpacesController());
-  final spaceGridController = Get.put(SpaceGridController());
   final poisController = Get.put(PoisController());
+  final spaceGridController = Get.put(SpaceGridController());
 
   @override
   Widget build(BuildContext context) {

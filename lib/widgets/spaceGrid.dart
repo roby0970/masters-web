@@ -7,8 +7,8 @@ import 'package:web_admin/widgets/coordinateTile.dart';
 class SpaceGrid extends StatelessWidget {
   SpaceGrid({Key? key}) : super(key: key);
 
-  final SpaceGridController spaceGridController = Get.find();
   final SpacesController spacesController = Get.find();
+  final SpaceGridController spaceGridController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Obx(() {

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:web_admin/controllers/pois.dart';
+import 'package:web_admin/controllers/spaces.dart';
 
 class PoisList extends StatefulWidget {
   const PoisList({Key? key}) : super(key: key);
@@ -11,13 +12,7 @@ class PoisList extends StatefulWidget {
 
 class _PoisListState extends State<PoisList> {
   final PoisController controller = Get.find();
-
-  @override
-  void initState() {
-    super.initState();
-    controller.getPois();
-  }
-
+  final SpacesController spacesController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Expanded(

@@ -1,4 +1,7 @@
 import 'package:get/get.dart';
+import 'package:web_admin/controllers/spaces.dart';
+import 'package:web_admin/models/poi.dart';
+import 'package:web_admin/models/spaces.dart';
 import '../models/coordinates.dart';
 
 import 'package:http/http.dart' as http;
@@ -8,20 +11,26 @@ class SpaceGridController extends GetxController {
   @override
   void onInit() {
     // called immediately after the widget is allocated memory
-    getCoordinates();
+
     super.onInit();
   }
 
+  RxBool loading = false.obs;
+  RxList<int> loadingToggle = List<int>.empty().obs;
   RxList<Coordinate> coordinates = List<Coordinate>.empty().obs;
 
   RxList<Coordinate> blockedCoordinates = List<Coordinate>.empty().obs;
 
-  Future<void> getCoordinates() async {
-    final response = await http
-        .get(Uri.parse("http://localhost:8000/coordinates"), headers: {
-      "Accept": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    });
+  Future<void> getCoordinates({bool loadIndicator = false}) async {
+    if (loadIndicator) loading(true);
+    SpacesController spacesController = Get.find();
+    final response = await http.get(
+        Uri.parse(
+            "http://localhost:8000/coordinates_space/${spacesController.currentSpace.value.id}"),
+        headers: {
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        });
 
     final items = json.decode(response.body).cast<Map<String, dynamic>>();
     List<Coordinate> newCoordinates = items.map<Coordinate>((json) {
@@ -32,17 +41,11 @@ class SpaceGridController extends GetxController {
         newCoordinates.where((element) => element.blocked == false).toList());
     blockedCoordinates(
         newCoordinates.where((element) => element.blocked == true).toList());
-    /*coordinates.value =
-        newCoordinates.where((element) => element.blocked == false).toList();
-    coordinates.refresh();
-    blockedCoordinates.value =
-        newCoordinates.where((element) => element.blocked == true).toList();
-    blockedCoordinates.refresh();*/
-
-    //print(items);
+    if (loadIndicator) loading(false);
   }
 
   Future<void> updateCoordinate(Coordinate oldC, Coordinate newC) async {
+    loadingToggle.add(oldC.id!);
     print("updajtema");
     final response = await http.put(
         Uri.parse("http://localhost:8000/coordinates/${oldC.id}"),
@@ -54,6 +57,7 @@ class SpaceGridController extends GetxController {
         body: jsonEncode(newC.toJson()));
     print(response.body);
     await getCoordinates();
+    loadingToggle.remove(oldC.id);
   }
 
   bool isBlocked(int i) {
@@ -97,6 +101,32 @@ class SpaceGridController extends GetxController {
   }
 
   Map<String, int> indexToCoords(int i) {
-    return {"x": (i / 12).floor(), "y": i % 12};
+    SpacesController spacesController = Get.find();
+    return {
+      "x": (i / spacesController.currentSpace.value.area!).floor(),
+      "y": i % spacesController.currentSpace.value.area!
+    };
+  }
+
+  void registerCoordinateToPoi(Coordinate c, Poi p) async {
+    Coordinate updated = Coordinate(
+        id: c.id,
+        x: c.x,
+        y: c.y,
+        idpoi: p.id,
+        idspace: p.idspace,
+        blocked: c.blocked);
+    await updateCoordinate(c, updated);
+  }
+
+  void unregisterCoordinateToPoi(Coordinate c, Poi base) async {
+    Coordinate updated = Coordinate(
+        id: c.id,
+        x: c.x,
+        y: c.y,
+        idpoi: base.id,
+        idspace: c.idspace,
+        blocked: c.blocked);
+    await updateCoordinate(c, updated);
   }
 }
