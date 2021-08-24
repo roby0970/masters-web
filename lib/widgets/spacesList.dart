@@ -4,6 +4,7 @@ import 'package:web_admin/controllers/pois.dart';
 import 'package:web_admin/controllers/spaceGrid.dart';
 import 'package:web_admin/controllers/spaces.dart';
 import 'package:web_admin/pages/spaceDetail.dart';
+import 'package:web_admin/widgets/spaceAdd.dart';
 
 class SpacesList extends StatefulWidget {
   const SpacesList({Key? key}) : super(key: key);
@@ -26,30 +27,36 @@ class _SpacesListState extends State<SpacesList> {
   Widget build(BuildContext context) {
     return Center(
       child: Container(
-        width: MediaQuery.of(context).size.width / 2,
         child: Obx(() {
           return ListView(
             children: [
               ...controller.spaces
                   .map(
-                    (e) => ListTile(
-                      title: Text(e.title ?? 'Title'),
-                      onTap: () {
-                        controller.currentSpace(e);
-                        poiController.getPois();
-                        spaceGridController.getCoordinates(loadIndicator: true);
-                        Get.to(SpaceDetail());
-                      },
-                      trailing: IconButton(
-                        icon: Icon(Icons.delete),
-                        onPressed: () => controller.deleteSpace(e.id),
+                    (e) => Container(
+                      margin: const EdgeInsets.symmetric(vertical: 8),
+                      child: Material(
+                        borderRadius: BorderRadius.circular(10),
+                        elevation: 15,
+                        child: ListTile(
+                            title: Text(
+                              e.title!,
+                              style: TextStyle(fontSize: 24),
+                            ),
+                            subtitle: Text("${e.longitude},  ${e.latitude}"),
+                            onTap: () {
+                              controller.currentSpace(e);
+                              poiController.getPois();
+                              spaceGridController.getCoordinates(
+                                  loadIndicator: true);
+                              Get.to(SpaceDetail());
+                            },
+                            trailing: Text("${e.area} x ${e.area}",
+                                style: TextStyle(fontSize: 24))),
                       ),
                     ),
                   )
                   .toList(),
-              ElevatedButton(
-                  onPressed: () => controller.pressAdd(),
-                  child: Text(controller.showAdd.toString())),
+              SpaceAdd(),
             ],
           );
         }),

@@ -1,7 +1,8 @@
 import 'package:get/get.dart';
-import 'package:web_admin/controllers/spaces.dart';
-import 'package:web_admin/models/poi.dart';
-import 'package:web_admin/models/spaces.dart';
+import 'package:web_admin/controllers/pois.dart';
+import '../controllers/spaces.dart';
+import '../models/poi.dart';
+
 import '../models/coordinates.dart';
 
 import 'package:http/http.dart' as http;
@@ -128,5 +129,25 @@ class SpaceGridController extends GetxController {
         idspace: c.idspace,
         blocked: c.blocked);
     await updateCoordinate(c, updated);
+  }
+
+  Future<void> unregisterAllPOICoordinates(Poi removeFrom) async {
+    SpacesController spacesController = Get.find();
+    PoisController poisController = Get.find();
+    coordinates
+        .where((c) => c.idpoi == removeFrom.id)
+        .toList()
+        .forEach((c) async {
+      Coordinate updated = Coordinate(
+          id: c.id,
+          x: c.x,
+          y: c.y,
+          idpoi:
+              poisController.getBasePoi(spacesController.currentSpace.value).id,
+          idspace: c.idspace,
+          blocked: c.blocked);
+      await updateCoordinate(c, updated);
+    });
+    getCoordinates();
   }
 }

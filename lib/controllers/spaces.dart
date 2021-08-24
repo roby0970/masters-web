@@ -41,4 +41,25 @@ class SpacesController extends GetxController {
       spaces.removeWhere((element) => element.id == id);
     }
   }
+
+  Future<void> postSpace(
+      String title, int area, double longitude, double latitude) async {
+    final response = await http.post(Uri.parse("http://localhost:8000/spaces"),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        body: jsonEncode({
+          "title": title,
+          "area": area,
+          "longitude": longitude,
+          "latitude": latitude,
+        }));
+    print(response.body);
+    final item = json.decode(response.body);
+    Space newSpace = Space.fromJson(item);
+
+    spaces.add(newSpace);
+  }
 }

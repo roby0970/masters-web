@@ -46,6 +46,26 @@ class PoisController extends GetxController {
     }
   }
 
+  Future<void> postPoi(String title) async {
+    SpacesController spacesController = Get.find();
+
+    final response = await http.post(Uri.parse("http://localhost:8000/pois"),
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        },
+        body: jsonEncode({
+          "title": title,
+          "idspace": spacesController.currentSpace.value.id,
+        }));
+    print(response.body);
+    final item = json.decode(response.body);
+    Poi newPoi = Poi.fromJson(item);
+
+    pois.add(newPoi);
+  }
+
   Future<void> deletePoi(int? id) async {
     final response = await http
         .delete(Uri.parse("http://localhost:8000/pois/$id"), headers: {
