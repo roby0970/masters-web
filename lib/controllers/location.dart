@@ -1,6 +1,5 @@
 import 'dart:convert';
 import 'dart:html';
-
 import 'package:get/get.dart';
 import 'package:web_admin/models/coordinates.dart';
 import 'package:web_socket_channel/web_socket_channel.dart';
@@ -15,8 +14,6 @@ class LocationController extends GetxController {
   late WebSocketChannel ws;
   @override
   void onInit() {
-    // TODO: implement onInit
-
     webSocket.onMessage.listen((MessageEvent e) {
       print(e.data);
       locations.clear();
@@ -28,10 +25,6 @@ class LocationController extends GetxController {
 
   @override
   void onClose() {
-    // TODO: implement onClos
-    // 0
-    //  ws.sink.close();e
-
     super.onClose();
   }
 

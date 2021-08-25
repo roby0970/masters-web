@@ -19,9 +19,9 @@ class CoordinateTile extends StatelessWidget {
     return Obx(() {
       Color c = Colors.transparent;
       if (coordinate.blocked == false) {
-        c = poisController.pois
+        c = Color(poisController.pois
             .firstWhere((p) => p.id == coordinate.idpoi)
-            .color!;
+            .color!);
       } else if (!coordinate.blocked!) {
         c = Colors.blue.shade300;
       }
@@ -30,20 +30,46 @@ class CoordinateTile extends StatelessWidget {
       }
       return GestureDetector(
         onTap: () {
-          if (poisController.selected.value.title ==
-              spacesController.currentSpace.value.title)
-            spaceGridController.toggleBlocked(coordinate);
-          else if (coordinate.idpoi != poisController.selected.value.id)
-            spaceGridController.registerCoordinateToPoi(
-                coordinate, poisController.selected.value);
-          else {
-            spaceGridController.unregisterCoordinateToPoi(coordinate,
-                poisController.getBasePoi(spacesController.currentSpace.value));
+          if (spaceGridController.selectedWallSide.value == WallSide.none) {
+            if (poisController.selected.value.title ==
+                spacesController.currentSpace.value.title)
+              spaceGridController.toggleBlocked(coordinate);
+            else if (coordinate.idpoi != poisController.selected.value.id)
+              spaceGridController.registerCoordinateToPoi(
+                  coordinate, poisController.selected.value);
+            else {
+              spaceGridController.unregisterCoordinateToPoi(
+                  coordinate,
+                  poisController
+                      .getBasePoi(spacesController.currentSpace.value));
+            }
+          } else {
+            spaceGridController.toggleBorder(coordinate);
           }
         },
         child: Container(
-            margin: EdgeInsets.all(2),
-            color: c,
+            margin: EdgeInsets.all(1),
+            decoration: BoxDecoration(
+              color: c,
+              border: Border(
+                left: BorderSide(
+                  color: Colors.black,
+                  width: coordinate.wallleft! ? 4 : 0,
+                ),
+                top: BorderSide(
+                  color: Colors.black,
+                  width: coordinate.wallup! ? 4 : 0,
+                ),
+                right: BorderSide(
+                  color: Colors.black,
+                  width: coordinate.wallright! ? 4 : 0,
+                ),
+                bottom: BorderSide(
+                  color: Colors.black,
+                  width: coordinate.walldown! ? 4 : 0,
+                ),
+              ),
+            ),
             child: spaceGridController.loadingToggle.contains(coordinate.id)
                 ? SizedBox(
                     child: CircularProgressIndicator(

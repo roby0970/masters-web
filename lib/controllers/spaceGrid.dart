@@ -8,6 +8,8 @@ import '../models/coordinates.dart';
 import 'package:http/http.dart' as http;
 import 'dart:convert';
 
+enum WallSide { left, top, right, bottom, none }
+
 class SpaceGridController extends GetxController {
   @override
   void onInit() {
@@ -21,6 +23,8 @@ class SpaceGridController extends GetxController {
   RxList<Coordinate> coordinates = List<Coordinate>.empty().obs;
 
   RxList<Coordinate> blockedCoordinates = List<Coordinate>.empty().obs;
+
+  Rx<WallSide> selectedWallSide = WallSide.none.obs;
 
   Future<void> getCoordinates({bool loadIndicator = false}) async {
     if (loadIndicator) loading(true);
@@ -47,7 +51,7 @@ class SpaceGridController extends GetxController {
 
   Future<void> updateCoordinate(Coordinate oldC, Coordinate newC) async {
     loadingToggle.add(oldC.id!);
-    print("updajtema");
+
     final response = await http.put(
         Uri.parse("http://localhost:8000/coordinates/${oldC.id}"),
         headers: {
@@ -56,7 +60,7 @@ class SpaceGridController extends GetxController {
           "Access-Control-Allow-Origin": "*"
         },
         body: jsonEncode(newC.toJson()));
-    print(response.body);
+
     await getCoordinates();
     loadingToggle.remove(oldC.id);
   }
@@ -84,6 +88,35 @@ class SpaceGridController extends GetxController {
   }
 
   void toggleBlocked(Coordinate c) async {
+    PoisController poisController = Get.find();
+    SpacesController spacesController = Get.find();
+    print(c.toJson());
+    await updateCoordinate(
+        c,
+        Coordinate(
+            id: c.id,
+            x: c.x,
+            y: c.y,
+            idpoi: poisController
+                .getBasePoi(spacesController.currentSpace.value)
+                .id,
+            idspace: c.idspace,
+            wallup: c.wallup,
+            wallright: c.wallright,
+            walldown: c.walldown,
+            wallleft: c.wallleft,
+            blocked: !c.blocked!));
+
+    blockedCoordinates.remove(c);
+    blockedCoordinates.refresh();
+    coordinates.add(c);
+    coordinates.refresh();
+  }
+
+  void toggleBorder(Coordinate c) async {
+    PoisController poisController = Get.find();
+    SpacesController spacesController = Get.find();
+    SpaceGridController spaceGridController = Get.find();
     print(c.toJson());
     await updateCoordinate(
         c,
@@ -93,7 +126,22 @@ class SpaceGridController extends GetxController {
             y: c.y,
             idpoi: c.idpoi,
             idspace: c.idspace,
-            blocked: !c.blocked!));
+            wallup: spaceGridController.selectedWallSide.value == WallSide.top
+                ? !c.wallup!
+                : c.wallup,
+            wallright:
+                spaceGridController.selectedWallSide.value == WallSide.right
+                    ? !c.wallright!
+                    : c.wallright,
+            walldown:
+                spaceGridController.selectedWallSide.value == WallSide.bottom
+                    ? !c.walldown!
+                    : c.walldown,
+            wallleft:
+                spaceGridController.selectedWallSide.value == WallSide.left
+                    ? !c.wallleft!
+                    : c.wallleft,
+            blocked: c.blocked));
 
     blockedCoordinates.remove(c);
     blockedCoordinates.refresh();
@@ -111,23 +159,33 @@ class SpaceGridController extends GetxController {
 
   void registerCoordinateToPoi(Coordinate c, Poi p) async {
     Coordinate updated = Coordinate(
-        id: c.id,
-        x: c.x,
-        y: c.y,
-        idpoi: p.id,
-        idspace: p.idspace,
-        blocked: c.blocked);
+      id: c.id,
+      x: c.x,
+      y: c.y,
+      idpoi: p.id,
+      idspace: p.idspace,
+      blocked: c.blocked,
+      wallup: c.wallup,
+      wallright: c.wallright,
+      walldown: c.walldown,
+      wallleft: c.wallleft,
+    );
     await updateCoordinate(c, updated);
   }
 
   void unregisterCoordinateToPoi(Coordinate c, Poi base) async {
     Coordinate updated = Coordinate(
-        id: c.id,
-        x: c.x,
-        y: c.y,
-        idpoi: base.id,
-        idspace: c.idspace,
-        blocked: c.blocked);
+      id: c.id,
+      x: c.x,
+      y: c.y,
+      idpoi: base.id,
+      idspace: c.idspace,
+      blocked: c.blocked,
+      wallup: c.wallup,
+      wallright: c.wallright,
+      walldown: c.walldown,
+      wallleft: c.wallleft,
+    );
     await updateCoordinate(c, updated);
   }
 
@@ -139,15 +197,20 @@ class SpaceGridController extends GetxController {
         .toList()
         .forEach((c) async {
       Coordinate updated = Coordinate(
-          id: c.id,
-          x: c.x,
-          y: c.y,
-          idpoi:
-              poisController.getBasePoi(spacesController.currentSpace.value).id,
-          idspace: c.idspace,
-          blocked: c.blocked);
+        id: c.id,
+        x: c.x,
+        y: c.y,
+        idpoi:
+            poisController.getBasePoi(spacesController.currentSpace.value).id,
+        idspace: c.idspace,
+        blocked: c.blocked,
+        wallup: c.wallup,
+        wallright: c.wallright,
+        walldown: c.walldown,
+        wallleft: c.wallleft,
+      );
       await updateCoordinate(c, updated);
     });
-    getCoordinates();
+    await getCoordinates();
   }
 }

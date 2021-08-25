@@ -3,8 +3,8 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:web_admin/controllers/location.dart';
-import 'package:web_admin/widgets/poiAdd.dart';
+import 'package:web_admin/widgets/wallAdd.dart';
+import '../controllers/location.dart';
 import '../controllers/pois.dart';
 import '../controllers/spaceGrid.dart';
 
@@ -34,31 +34,45 @@ class SpaceDetail extends StatelessWidget {
               color: Colors.black, fontWeight: FontWeight.bold, fontSize: 40),
         ),
       ),
-      body: Container(
-        width: double.infinity,
-        margin: EdgeInsets.symmetric(horizontal: context.width * 0.05),
-        child: Column(
-          children: [
-            SizedBox(
-              height: 20,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              children: [
-                Flexible(
-                  flex: 3,
-                  child: Obx(() => !spaceGridController.loading.value
-                      ? SpaceGrid()
-                      : CircularProgressIndicator()),
-                ),
-                SizedBox(
-                  width: 20,
-                ),
-                Flexible(
-                  flex: 3,
-                  child: SingleChildScrollView(
+      body: SingleChildScrollView(
+        child: Container(
+          width: double.infinity,
+          margin: EdgeInsets.symmetric(horizontal: context.width * 0.05),
+          child: Column(
+            children: [
+              SizedBox(
+                height: 20,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.start,
+                children: [
+                  Flexible(
+                    flex: 3,
+                    child: Obx(() => !spaceGridController.loading.value
+                        ? SpaceGrid()
+                        : CircularProgressIndicator()),
+                  ),
+                  SizedBox(
+                    width: 20,
+                  ),
+                  Flexible(
+                    flex: 3,
                     child: Column(
                       children: [
+                        Text(
+                          "Add walls",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 26),
+                        ),
+                        SizedBox(
+                          height: 175,
+                          child: WallAdd(),
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
                         Text(
                           "POIs",
                           style: TextStyle(
@@ -73,10 +87,10 @@ class SpaceDetail extends StatelessWidget {
                       ],
                     ),
                   ),
-                ),
-              ],
-            )
-          ],
+                ],
+              )
+            ],
+          ),
         ),
       ),
       floatingActionButton: FloatingActionButton(

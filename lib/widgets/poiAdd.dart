@@ -1,14 +1,16 @@
+import 'package:flex_color_picker/flex_color_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:web_admin/controllers/pois.dart';
 import 'package:web_admin/controllers/spaces.dart';
-import 'package:web_admin/models/poi.dart';
 
 class PoiAdd extends StatelessWidget {
   PoiAdd({Key? key}) : super(key: key);
   final SpacesController spacesController = Get.find();
   final PoisController poisController = Get.find();
   TextEditingController titleController = TextEditingController();
+  int pickedColor = 4288585374;
+  final _formKey = GlobalKey<FormState>();
   @override
   Widget build(BuildContext context) {
     return ListTile(
@@ -20,9 +22,32 @@ class PoiAdd extends StatelessWidget {
                 SizedBox(
                   height: 20,
                 ),
-                TextFormField(
-                  controller: titleController,
-                  decoration: InputDecoration(hintText: "Title"),
+                Form(
+                  key: _formKey,
+                  child: TextFormField(
+                    controller: titleController,
+                    decoration: InputDecoration(labelText: "Title"),
+                    validator: (val) {
+                      if (val == null || val.isEmpty)
+                        return 'Enter valid title value';
+                      return null;
+                    },
+                  ),
+                ),
+                SizedBox(
+                  height: 20,
+                ),
+                ColorPicker(
+                  color: Color(pickedColor),
+                  showColorName: true,
+                  onColorChanged: (c) {
+                    pickedColor = c.value;
+                  },
+                  pickersEnabled: const <ColorPickerType, bool>{
+                    ColorPickerType.primary: false,
+                    ColorPickerType.accent: false,
+                    ColorPickerType.wheel: true,
+                  },
                 ),
                 SizedBox(
                   height: 20,
@@ -37,10 +62,13 @@ class PoiAdd extends StatelessWidget {
                         child: Text("Cancel")),
                     ElevatedButton(
                         onPressed: () async {
-                          await poisController.postPoi(titleController.text);
-                          print(
-                              "new poi ${spacesController.currentSpace.value.id} -> ${titleController.text}");
-                          Get.back();
+                          if (_formKey.currentState!.validate()) {
+                            await poisController.postPoi(
+                                titleController.text, pickedColor);
+                            print(
+                                "new poi ${spacesController.currentSpace.value.id} -> ${titleController.text}");
+                            Get.back();
+                          }
                         },
                         child: Text("Add")),
                   ],

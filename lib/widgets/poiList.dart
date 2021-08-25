@@ -29,7 +29,8 @@ class _PoisListState extends State<PoisList> {
                   title: Container(
                     decoration: BoxDecoration(
                         border: Border(
-                            left: BorderSide(color: e.color!, width: 20))),
+                            left:
+                                BorderSide(color: Color(e.color!), width: 20))),
                     padding: EdgeInsets.only(
                         left: poisController.selected.value == e ? 0 : 32),
                     child: Padding(
@@ -45,44 +46,53 @@ class _PoisListState extends State<PoisList> {
                   ),
                   onTap: () {
                     poisController.selectPoi(e);
+                    spaceGridController.selectedWallSide(WallSide.none);
                   },
-                  trailing: IconButton(
-                      icon: Icon(Icons.delete),
-                      onPressed: () {
-                        Get.defaultDialog(
-                            title: "Delete POI",
-                            content: Column(
-                              children: [
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Text(
-                                    "Are you sure you want to delete ${e.title} POI? POI coordinates will revert to default."),
-                                SizedBox(
-                                  height: 20,
-                                ),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceEvenly,
+                  trailing: e !=
+                          poisController
+                              .getBasePoi(spacesController.currentSpace.value)
+                      ? IconButton(
+                          icon: Icon(Icons.delete),
+                          onPressed: () {
+                            Get.defaultDialog(
+                                title: "Delete POI",
+                                content: Column(
                                   children: [
-                                    TextButton(
-                                        onPressed: () {
-                                          Get.back();
-                                        },
-                                        child: Text("Cancel")),
-                                    ElevatedButton(
-                                        onPressed: () async {
-                                          await spaceGridController
-                                              .unregisterAllPOICoordinates(e);
-                                          await poisController.deletePoi(e.id);
-                                          Get.back();
-                                        },
-                                        child: Text("Delete")),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Text(
+                                        "Are you sure you want to delete ${e.title} POI? POI coordinates will revert to default."),
+                                    SizedBox(
+                                      height: 20,
+                                    ),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.spaceEvenly,
+                                      children: [
+                                        TextButton(
+                                            onPressed: () {
+                                              Get.back();
+                                            },
+                                            child: Text("Cancel")),
+                                        ElevatedButton(
+                                            onPressed: () async {
+                                              await spaceGridController
+                                                  .unregisterAllPOICoordinates(
+                                                      e)
+                                                  .then((value) {
+                                                poisController.deletePoi(e.id);
+                                              });
+
+                                              Get.back();
+                                            },
+                                            child: Text("Delete")),
+                                      ],
+                                    )
                                   ],
-                                )
-                              ],
-                            ));
-                      }),
+                                ));
+                          })
+                      : null,
                 ),
               )
               .toList(),
