@@ -19,6 +19,7 @@ class SpaceGrid extends StatelessWidget {
             ? Colors.grey[200]
             : Colors.black,
         child: GridView.builder(
+            reverse: true,
             shrinkWrap: true,
             itemCount: spacesController.currentSpace.value.area! *
                 spacesController.currentSpace.value.area!,

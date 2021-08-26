@@ -11,13 +11,6 @@ import 'dart:convert';
 enum WallSide { left, top, right, bottom, none }
 
 class SpaceGridController extends GetxController {
-  @override
-  void onInit() {
-    // called immediately after the widget is allocated memory
-
-    super.onInit();
-  }
-
   RxBool loading = false.obs;
   RxList<int> loadingToggle = List<int>.empty().obs;
   RxList<Coordinate> coordinates = List<Coordinate>.empty().obs;
@@ -152,8 +145,8 @@ class SpaceGridController extends GetxController {
   Map<String, int> indexToCoords(int i) {
     SpacesController spacesController = Get.find();
     return {
-      "x": (i / spacesController.currentSpace.value.area!).floor(),
-      "y": i % spacesController.currentSpace.value.area!
+      "y": (i / spacesController.currentSpace.value.area!).floor(),
+      "x": i % spacesController.currentSpace.value.area!
     };
   }
 
