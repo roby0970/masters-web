@@ -3,6 +3,9 @@ import 'dart:math';
 
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:web_admin/controllers/beacons.dart';
+import 'package:web_admin/widgets/beaconAdd.dart';
+import 'package:web_admin/widgets/beaconList.dart';
 import 'package:web_admin/widgets/wallAdd.dart';
 import '../controllers/location.dart';
 import '../controllers/pois.dart';
@@ -19,6 +22,7 @@ class SpaceDetail extends StatelessWidget {
   final SpaceGridController spaceGridController = Get.find();
   final PoisController poisController = Get.find();
   final LocationController locationController = Get.find();
+  final BeaconsController beaconsController = Get.find();
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -60,7 +64,25 @@ class SpaceDetail extends StatelessWidget {
                     child: Column(
                       children: [
                         Text(
-                          "Add walls",
+                          "Beacons",
+                          style: TextStyle(
+                              color: Colors.black,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 26),
+                        ),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        BeaconsList(),
+                        SizedBox(
+                          height: 15,
+                        ),
+                        BeaconAdd(),
+                        SizedBox(
+                          height: 40,
+                        ),
+                        Text(
+                          "Add/remove walls",
                           style: TextStyle(
                               color: Colors.black,
                               fontWeight: FontWeight.bold,
@@ -92,21 +114,6 @@ class SpaceDetail extends StatelessWidget {
             ],
           ),
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          int x = Random().nextInt(14);
-          int y = Random().nextInt(14);
-          if (locationController.webSocket != null &&
-              locationController.webSocket.readyState == WebSocket.OPEN) {
-            locationController.webSocket.send(
-                "{\"mac\": \"12:34:56:78\",\"desc\": \"Robertt S\",\"x\": $x,\"y\": $y}");
-          } else {
-            print('WebSocket not connected, message not sent');
-          }
-        },
-        tooltip: 'Send message',
-        child: const Icon(Icons.send),
       ),
     );
   }

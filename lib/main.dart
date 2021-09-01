@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
+import 'package:web_admin/controllers/beacons.dart';
 import 'package:web_admin/pages/home.dart';
 import 'package:web_admin/pages/spaceDetail.dart';
 
@@ -25,6 +26,7 @@ class MyApp extends StatelessWidget {
 
   final spacesController = Get.put(SpacesController());
   final poisController = Get.put(PoisController());
+  final beaconsController = Get.put(BeaconsController());
   final spaceGridController = Get.put(SpaceGridController());
   final locationsController = Get.put(LocationController());
 

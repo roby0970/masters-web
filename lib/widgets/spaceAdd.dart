@@ -26,7 +26,7 @@ class SpaceAdd extends StatelessWidget {
           hoverColor: Colors.blue.shade100,
           onTap: () {
             Get.defaultDialog(
-                title: "Add a new Space",
+                title: "Add new Space",
                 content: Form(
                   key: _formKey,
                   child: Column(

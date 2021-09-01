@@ -80,6 +80,10 @@ class CoordinateTile extends StatelessWidget {
                         decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(20),
                             color: Colors.yellow),
+                        child: Center(
+                          child: Text(locationController
+                              .getNameForCoordinate(coordinate)),
+                        ),
                       )
                     : null),
       );

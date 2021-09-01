@@ -16,7 +16,7 @@ class PoiAdd extends StatelessWidget {
     return ListTile(
       onTap: () {
         Get.defaultDialog(
-            title: "Add a new POI",
+            title: "Add new POI",
             content: Column(
               children: [
                 SizedBox(

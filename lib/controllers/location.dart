@@ -17,10 +17,11 @@ class LocationController extends GetxController {
   @override
   void onInit() {
     webSocket.onMessage.listen((MessageEvent e) {
+      var location = Location.fromJson(jsonDecode(e.data));
       print(e.data);
+      locations.removeWhere((element) => element.name == location.name);
 
-      locations.clear();
-      locations.add(Location.fromJson(jsonDecode(e.data)));
+      locations.add(location);
     });
     super.onInit();
   }
@@ -40,5 +41,10 @@ class LocationController extends GetxController {
     });
 
     return live;
+  }
+
+  String getNameForCoordinate(Coordinate c) {
+    Location l = locations.where((l) => l.x == c.x && l.y == c.y).first;
+    return l.name!;
   }
 }
