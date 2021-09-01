@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:web_admin/controllers/spaces.dart';
 import '../models/spaces.dart';
@@ -27,7 +28,7 @@ class PoisController extends GetxController {
 
     final response = await http.get(
         Uri.parse(
-            "http://localhost:8000/pois_space/${spacesController.currentSpace.value.id}"),
+            "http://${dotenv.env['IP_ADDR']}:${dotenv.env['PORT']}/pois_space/${spacesController.currentSpace.value.id}"),
         headers: {
           "Accept": "application/json",
           "Access-Control-Allow-Origin": "*"
@@ -49,7 +50,8 @@ class PoisController extends GetxController {
   Future<void> postPoi(String title, int color) async {
     SpacesController spacesController = Get.find();
 
-    final response = await http.post(Uri.parse("http://localhost:8000/pois"),
+    final response = await http.post(
+        Uri.parse("http://${dotenv.env['IP_ADDR']}:${dotenv.env['PORT']}/pois"),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",
@@ -68,11 +70,13 @@ class PoisController extends GetxController {
   }
 
   Future<void> deletePoi(int? id) async {
-    final response = await http
-        .delete(Uri.parse("http://localhost:8000/pois/$id"), headers: {
-      "Accept": "application/json",
-      "Access-Control-Allow-Origin": "*"
-    });
+    final response = await http.delete(
+        Uri.parse(
+            "http://${dotenv.env['IP_ADDR']}:${dotenv.env['PORT']}/pois/$id"),
+        headers: {
+          "Accept": "application/json",
+          "Access-Control-Allow-Origin": "*"
+        });
 
     if (response.statusCode == 200) {
       pois.removeWhere((element) => element.id == id);

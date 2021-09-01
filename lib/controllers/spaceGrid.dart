@@ -1,3 +1,4 @@
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:get/get.dart';
 import 'package:web_admin/controllers/pois.dart';
 import '../controllers/spaces.dart';
@@ -24,7 +25,7 @@ class SpaceGridController extends GetxController {
     SpacesController spacesController = Get.find();
     final response = await http.get(
         Uri.parse(
-            "http://localhost:8000/coordinates_space/${spacesController.currentSpace.value.id}"),
+            "http://${dotenv.env['IP_ADDR']}:${dotenv.env['PORT']}/coordinates_space/${spacesController.currentSpace.value.id}"),
         headers: {
           "Accept": "application/json",
           "Access-Control-Allow-Origin": "*"
@@ -46,7 +47,8 @@ class SpaceGridController extends GetxController {
     loadingToggle.add(oldC.id!);
 
     final response = await http.put(
-        Uri.parse("http://localhost:8000/coordinates/${oldC.id}"),
+        Uri.parse(
+            "http://${dotenv.env['IP_ADDR']}:${dotenv.env['PORT']}/coordinates/${oldC.id}"),
         headers: {
           "Content-Type": "application/json",
           "Accept": "application/json",

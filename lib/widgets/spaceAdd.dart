@@ -11,6 +11,8 @@ class SpaceAdd extends StatelessWidget {
   TextEditingController areaController = TextEditingController();
   TextEditingController longitudeController = TextEditingController();
   TextEditingController latitudeController = TextEditingController();
+  TextEditingController compassController = TextEditingController();
+  TextEditingController datasetController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
   @override
@@ -69,15 +71,63 @@ class SpaceAdd extends StatelessWidget {
                         },
                       ),
                       TextFormField(
-                          controller: latitudeController,
-                          decoration: InputDecoration(labelText: "Latitude"),
+                        controller: latitudeController,
+                        decoration: InputDecoration(labelText: "Latitude"),
+                        validator: (val) {
+                          if (val == null ||
+                              val.isEmpty ||
+                              double.tryParse(val) == null)
+                            return 'Enter valid latitude value (decimal)';
+                          return null;
+                        },
+                      ),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      TextFormField(
+                          controller: compassController,
+                          decoration: InputDecoration(
+                              labelText: "Orientation (compass)"),
                           validator: (val) {
                             if (val == null ||
                                 val.isEmpty ||
                                 double.tryParse(val) == null)
-                              return 'Enter valid latitude value (decimal)';
+                              return 'Enter valid compass value (decimal)';
                             return null;
                           }),
+                      SizedBox(
+                        height: 20,
+                      ),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextFormField(
+                                controller: datasetController,
+                                enabled: false,
+                                decoration:
+                                    InputDecoration(labelText: "Dataset file"),
+                                validator: (val) {
+                                  if (val == null || val.isEmpty)
+                                    return 'Enter valid dataset file';
+                                  return null;
+                                }),
+                          ),
+                          Obx(() {
+                            if (spacesController.uploading.value) {
+                              return CircularProgressIndicator();
+                            } else {
+                              return IconButton(
+                                icon: Icon(Icons.file_upload),
+                                onPressed: () async {
+                                  await spacesController.uploadFile();
+                                  datasetController.text =
+                                      spacesController.selectedFile.value;
+                                },
+                              );
+                            }
+                          })
+                        ],
+                      ),
                       SizedBox(
                         height: 20,
                       ),
@@ -98,9 +148,11 @@ class SpaceAdd extends StatelessWidget {
                                       double.parse(longitudeController.text);
                                   double latitude =
                                       double.parse(latitudeController.text);
-
-                                  await spacesController.postSpace(
-                                      title, area, longitude, latitude);
+                                  double compass =
+                                      double.parse(compassController.text);
+                                  String dataset = datasetController.text;
+                                  await spacesController.postSpace(title, area,
+                                      longitude, latitude, compass, dataset);
                                   Get.back();
                                 }
                               },
