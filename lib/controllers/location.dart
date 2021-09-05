@@ -18,9 +18,7 @@ class LocationController extends GetxController {
   void onInit() {
     webSocket.onMessage.listen((MessageEvent e) {
       var location = Location.fromJson(jsonDecode(e.data));
-      print(e.data);
       locations.removeWhere((element) => element.name == location.name);
-
       locations.add(location);
     });
     super.onInit();

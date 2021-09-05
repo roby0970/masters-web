@@ -16,10 +16,14 @@ class _BeaconsListState extends State<BeaconsList> {
   @override
   Widget build(BuildContext context) {
     return Obx(() {
+      int i = 1;
       return Wrap(
         children: [
           ...beaconsController.beacons
-              .map((e) => Stack(
+              .map((
+                e,
+              ) =>
+                  Stack(
                     children: [
                       Container(
                         padding:
@@ -29,7 +33,7 @@ class _BeaconsListState extends State<BeaconsList> {
                             padding: EdgeInsets.symmetric(
                                 horizontal: 4, vertical: 8),
                             child: Text(
-                              e.title!,
+                              "[${(i++).toString()}]  ${e.title!}",
                               style: TextStyle(fontSize: 20),
                             ),
                           ),

@@ -12,10 +12,12 @@ class SpacesController extends GetxController {
           .obs;
   RxString selectedFile = "".obs;
   RxBool uploading = false.obs;
-  var showAdd = true.obs;
-  int id = 1;
 
-  void pressAdd() => showAdd.toggle();
+  @override
+  void onReady() {
+    getSpaces();
+    super.onReady();
+  }
 
   Future<void> getSpaces() async {
     final response = await http.get(
@@ -31,8 +33,7 @@ class SpacesController extends GetxController {
       return Space.fromJson(json);
     }).toList();
 
-    spaces.clear();
-    spaces.addAll(newSpaces);
+    spaces(newSpaces);
   }
 
   Future<void> deleteSpace(int? id) async {
@@ -49,8 +50,14 @@ class SpacesController extends GetxController {
     }
   }
 
-  Future<void> postSpace(String title, int area, double longitude,
-      double latitude, double compass, String dataset) async {
+  Future<void> postSpace(
+      String title,
+      int area,
+      double longitude,
+      double latitude,
+      double compass,
+      double coordinateSize,
+      String dataset) async {
     print(compass);
     print(dataset);
 
@@ -68,6 +75,7 @@ class SpacesController extends GetxController {
           "longitude": longitude,
           "latitude": latitude,
           "compass": compass,
+          "coord_size": coordinateSize,
           "dataset": dataset,
         }));
     print(response.body);
@@ -87,7 +95,7 @@ class SpacesController extends GetxController {
     var postUri = Uri.parse(
         "http://${dotenv.env['IP_ADDR']}:${dotenv.env['PORT']}/upload");
     var request = new http.MultipartRequest("POST", postUri);
-    request.fields['file'] = 'blah';
+
     request.files.add(new http.MultipartFile('file', obj.readStream!, obj.size,
         filename: obj.name));
     uploading(true);

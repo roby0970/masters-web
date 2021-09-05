@@ -7,23 +7,11 @@ import 'package:web_admin/controllers/spaces.dart';
 import 'package:web_admin/pages/spaceDetail.dart';
 import 'package:web_admin/widgets/spaceAdd.dart';
 
-class SpacesList extends StatefulWidget {
-  const SpacesList({Key? key}) : super(key: key);
-
-  @override
-  _SpacesListState createState() => _SpacesListState();
-}
-
-class _SpacesListState extends State<SpacesList> {
+class SpacesList extends StatelessWidget {
   final SpacesController controller = Get.find();
   final PoisController poiController = Get.find();
   final SpaceGridController spaceGridController = Get.find();
   final BeaconsController beaconsController = Get.find();
-  @override
-  void initState() {
-    super.initState();
-    controller.getSpaces();
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -53,7 +41,8 @@ class _SpacesListState extends State<SpacesList> {
                                   loadIndicator: true);
                               Get.to(SpaceDetail());
                             },
-                            trailing: Text("${e.area} x ${e.area}",
+                            trailing: Text(
+                                "${e.area} x ${e.area} [${e.coordSize}m]",
                                 style: TextStyle(fontSize: 24))),
                       ),
                     ),

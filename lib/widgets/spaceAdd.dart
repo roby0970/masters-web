@@ -12,6 +12,7 @@ class SpaceAdd extends StatelessWidget {
   TextEditingController longitudeController = TextEditingController();
   TextEditingController latitudeController = TextEditingController();
   TextEditingController compassController = TextEditingController();
+  TextEditingController coordinateController = TextEditingController();
   TextEditingController datasetController = TextEditingController();
 
   final _formKey = GlobalKey<FormState>();
@@ -27,139 +28,164 @@ class SpaceAdd extends StatelessWidget {
           onTap: () {
             Get.defaultDialog(
                 title: "Add new Space",
-                content: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: [
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                        controller: titleController,
-                        decoration: InputDecoration(labelText: "Title"),
-                        validator: (val) {
-                          if (val == null || val.isEmpty)
-                            return 'Enter valid title value';
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        controller: areaController,
-                        decoration: InputDecoration(
-                          labelText: "Border length",
+                content: Container(
+                  width: 800,
+                  child: Form(
+                    key: _formKey,
+                    child: Column(
+                      children: [
+                        SizedBox(
+                          height: 20,
                         ),
-                        onChanged: (va) {
-                          print(int.tryParse(va));
-                        },
-                        validator: (val) {
-                          if (val == null ||
-                              val.isEmpty ||
-                              int.tryParse(val) == null)
-                            return 'Enter valid length value (integer)';
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        controller: longitudeController,
-                        decoration: InputDecoration(labelText: "Longitude"),
-                        validator: (val) {
-                          if (val == null ||
-                              val.isEmpty ||
-                              double.tryParse(val) == null)
-                            return 'Enter valid longitude value (decimal)';
-                          return null;
-                        },
-                      ),
-                      TextFormField(
-                        controller: latitudeController,
-                        decoration: InputDecoration(labelText: "Latitude"),
-                        validator: (val) {
-                          if (val == null ||
-                              val.isEmpty ||
-                              double.tryParse(val) == null)
-                            return 'Enter valid latitude value (decimal)';
-                          return null;
-                        },
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      TextFormField(
-                          controller: compassController,
+                        TextFormField(
+                          controller: titleController,
+                          decoration: InputDecoration(labelText: "Title"),
+                          validator: (val) {
+                            if (val == null || val.isEmpty)
+                              return 'Enter valid title value';
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: areaController,
                           decoration: InputDecoration(
-                              labelText: "Orientation (compass)"),
+                            labelText: "Border length",
+                          ),
+                          onChanged: (va) {
+                            print(int.tryParse(va));
+                          },
+                          validator: (val) {
+                            if (val == null ||
+                                val.isEmpty ||
+                                int.tryParse(val) == null)
+                              return 'Enter valid length value (integer)';
+                            return null;
+                          },
+                        ),
+                        TextFormField(
+                          controller: longitudeController,
+                          decoration: InputDecoration(labelText: "Longitude"),
                           validator: (val) {
                             if (val == null ||
                                 val.isEmpty ||
                                 double.tryParse(val) == null)
-                              return 'Enter valid compass value (decimal)';
+                              return 'Enter valid longitude value (decimal)';
                             return null;
-                          }),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: TextFormField(
-                                controller: datasetController,
-                                enabled: false,
-                                decoration:
-                                    InputDecoration(labelText: "Dataset file"),
-                                validator: (val) {
-                                  if (val == null || val.isEmpty)
-                                    return 'Enter valid dataset file';
-                                  return null;
-                                }),
-                          ),
-                          Obx(() {
-                            if (spacesController.uploading.value) {
-                              return CircularProgressIndicator();
-                            } else {
-                              return IconButton(
-                                icon: Icon(Icons.file_upload),
-                                onPressed: () async {
-                                  await spacesController.uploadFile();
-                                  datasetController.text =
-                                      spacesController.selectedFile.value;
-                                },
-                              );
-                            }
-                          })
-                        ],
-                      ),
-                      SizedBox(
-                        height: 20,
-                      ),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                        children: [
-                          TextButton(
-                              onPressed: () {
-                                Get.back();
-                              },
-                              child: Text("Cancel")),
-                          ElevatedButton(
-                              onPressed: () async {
-                                if (_formKey.currentState!.validate()) {
-                                  String title = titleController.text;
-                                  int area = int.parse(areaController.text);
-                                  double longitude =
-                                      double.parse(longitudeController.text);
-                                  double latitude =
-                                      double.parse(latitudeController.text);
-                                  double compass =
-                                      double.parse(compassController.text);
-                                  String dataset = datasetController.text;
-                                  await spacesController.postSpace(title, area,
-                                      longitude, latitude, compass, dataset);
+                          },
+                        ),
+                        TextFormField(
+                          controller: latitudeController,
+                          decoration: InputDecoration(labelText: "Latitude"),
+                          validator: (val) {
+                            if (val == null ||
+                                val.isEmpty ||
+                                double.tryParse(val) == null)
+                              return 'Enter valid latitude value (decimal)';
+                            return null;
+                          },
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                            controller: compassController,
+                            decoration: InputDecoration(
+                                labelText: "Orientation (compass)"),
+                            validator: (val) {
+                              if (val == null ||
+                                  val.isEmpty ||
+                                  double.tryParse(val) == null)
+                                return 'Enter valid compass value (decimal)';
+                              return null;
+                            }),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        TextFormField(
+                            controller: coordinateController,
+                            decoration:
+                                InputDecoration(labelText: "Coordinate size"),
+                            validator: (val) {
+                              if (val == null ||
+                                  val.isEmpty ||
+                                  double.tryParse(val) == null)
+                                return 'Enter valid coordinate size (decimal)';
+                              return null;
+                            }),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: TextFormField(
+                                  controller: datasetController,
+                                  decoration: InputDecoration(
+                                      labelText: "Dataset file"),
+                                  validator: (val) {
+                                    if (val == null || val.isEmpty)
+                                      return 'Enter valid dataset file';
+                                    return null;
+                                  }),
+                            ),
+                            Obx(() {
+                              if (spacesController.uploading.value) {
+                                return CircularProgressIndicator();
+                              } else {
+                                return IconButton(
+                                  icon: Icon(Icons.file_upload),
+                                  onPressed: () async {
+                                    await spacesController.uploadFile();
+
+                                    datasetController.text =
+                                        spacesController.selectedFile.value;
+                                  },
+                                );
+                              }
+                            })
+                          ],
+                        ),
+                        SizedBox(
+                          height: 20,
+                        ),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            TextButton(
+                                onPressed: () {
                                   Get.back();
-                                }
-                              },
-                              child: Text("Add")),
-                        ],
-                      )
-                    ],
+                                },
+                                child: Text("Cancel")),
+                            ElevatedButton(
+                                onPressed: () async {
+                                  if (_formKey.currentState!.validate()) {
+                                    String title = titleController.text;
+                                    int area = int.parse(areaController.text);
+                                    double longitude =
+                                        double.parse(longitudeController.text);
+                                    double latitude =
+                                        double.parse(latitudeController.text);
+                                    double compass =
+                                        double.parse(compassController.text);
+                                    double coordinateSize =
+                                        double.parse(coordinateController.text);
+                                    String dataset = datasetController.text;
+                                    await spacesController.postSpace(
+                                        title,
+                                        area,
+                                        longitude,
+                                        latitude,
+                                        compass,
+                                        coordinateSize,
+                                        dataset);
+                                    Get.back();
+                                  }
+                                },
+                                child: Text("Add")),
+                          ],
+                        )
+                      ],
+                    ),
                   ),
                 ));
           },
